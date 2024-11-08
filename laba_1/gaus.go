@@ -54,12 +54,10 @@ func main() {
 		x[i] /= Matr[i][i]
 	}
 
-	fmt.Println("Решение системы уравнений:")
+	fmt.Println("Решение методом Гауса: ")
 	for i := 0; i < len(x); i++ {
 		fmt.Printf("x[%d] = %.6f\n", i, x[i])
 	}
-
-	// Найти еще
 
 	// var Matr [3][3]float64 = [3][3]float64{
 	// 	{1.54, 1.70, 1.62},
@@ -114,7 +112,7 @@ func main() {
 			}
 		}
 	}
-	fmt.Println("Преобразованная матрица2: ", Matr3)
+	// fmt.Println("Преобразованная матрица2: ", Matr3)
 	Matr3[0][0] = math.Sqrt(Matr3[0][0])
 	znamenatel = Matr3[1][0]  //!!!
 	Matr3[1][0] = Matr3[0][1] //!!!
@@ -127,7 +125,7 @@ func main() {
 	Matr3[0][1] = 0
 	Matr3[0][2] = 0
 	Matr3[1][2] = 0
-	fmt.Println("Преобразованная матрица2: ", Matr3)
+	// fmt.Println("Преобразованная матрица2: ", Matr3)
 
 	var Matr3tr [3][3]float64 = Matr3
 	for i := 0; i < len(Matr3); i++ {
@@ -138,7 +136,7 @@ func main() {
 	y3 := Stolb2[0] / Matr3[0][0]
 	y2 := Stolb2[1] / (Matr3[1][1] * Matr3[1][0] * y3)
 	y1 := Stolb2[0] / (Matr3[2][0] * Matr3[2][1] * y2 * Matr[2][2] * y3)
-	fmt.Println("y1 = ", y1, "y2 = ", y2, "y3 = ", y3)
+	// fmt.Println("y1 = ", y1, "y2 = ", y2, "y3 = ", y3)
 
 	fmt.Println("Решение методом Холецкого: ")
 	X3 := y3 / Matr3tr[2][2]

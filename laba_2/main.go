@@ -1,9 +1,5 @@
 package main //			go run laba_2/main.go
-
-import (
-	"fmt"
-	"math"
-)
+import "fmt"
 
 func main() {
 	// 		Метод Якоби
@@ -14,77 +10,56 @@ func main() {
 		{0.0324, 0.0260, 0.0197, 1.6000},
 	}
 	var Stolb [4]float64 = [4]float64{0.6632, 2.7779, 2.5330, 1.9285}
-	// var MatrD [4][4]float64
-	// var MatrL [4][4]float64
-	// var MatrU [4][4]float64
 	// Начальные условия
-	var x [4]float64       // Вектор переменных
-	var x_new [4]float64   // Вектор для хранения новых значений переменных
-	const epsilon = 0.0001 // Порог сходимости
-	iterations := 1        // Счетчик итераций
-
-	// Итерационный процесс
-	for {
-		// Обновляем значения переменных
+	var x [4]float64 = [4]float64{0, 0, 0, 0} // Вектор переменных
+	var x_new [4]float64                      // Вектор для хранения новых значений переменных
+	iterations := 0                           // Счетчик итераций
+	for j := 0; j < 3; j++ {
 		for i := 0; i < 4; i++ {
-			sum := 0.0
-			// Суммируем все элементы, кроме диагонального
-			for j := 0; j < 4; j++ {
-				if i != j {
-					sum += Matr[i][j] * x[j]
-				}
-			}
-			// Вычисляем новое значение переменной
-			x_new[i] = (Stolb[i] - sum) / Matr[i][i]
+			x_new[i] = (Stolb[i] + Matr[i][i]*x[i] /* Сложением нивелирую математику*/ - Matr[i][0]*x[0] - Matr[i][1]*x[1] - Matr[i][2]*x[2] - Matr[i][3]*x[3]) / Matr[i][i]
 		}
-
-		// Проверка на сходимость
-		converged := true
-		for i := 0; i < 4; i++ {
-			if math.Abs(x_new[i]-x[i]) > epsilon {
-				converged = false
-				break
-			}
-		}
-
-		// Если все значения сошлись, выходим из цикла
-		if converged {
-			break
-		}
-
-		// Обновляем вектор переменных для следующей итерации
-		copy(x[:], x_new[:])
+		x = x_new
 		iterations++
 	}
+	fmt.Println("Решение методом Якоби: ", x)
+	fmt.Println("Кол-во операций: ", iterations)
+	iterations = 0
 
-	// Выводим результат
-	fmt.Printf("Решение системы уравнений после %d итераций:\n", iterations)
-	for i := 0; i < 4; i++ {
-		fmt.Printf("x[%d] = %.6f\n", i, x[i])
+	//			Метод зейделя
+
+	x = [4]float64{0, 0, 0, 0}
+	for j := 0; j < 3; j++ {
+		for i := 0; i < 4; i++ {
+			x_new[i] = (Stolb[i] + Matr[i][i]*x[i] /* Сложением нивелирую математику*/ - Matr[i][0]*x[0] - Matr[i][1]*x[1] - Matr[i][2]*x[2] - Matr[i][3]*x[3]) / Matr[i][i]
+			x[i] = x_new[i]
+		}
+		iterations++
 	}
-	fmt.Println("Колличкство итераций: ", iterations)
+	fmt.Println("Решение методом Зейделя: ", x)
+	fmt.Println("Кол-во операций: ", iterations)
 
-	// for i := 0; i < 4; i++ {
-	// 	for j := 0; j < 4; j++ {
-	// 		if i == j {
-	// 			MatrD[i][j] = Matr[i][j]
-	// 			MatrU[i][j] = 0
-	// 			MatrL[i][j] = 0
-	// 		} else if i > j {
-	// 			MatrD[i][j] = 0
-	// 			MatrU[i][j] = 0
-	// 			MatrL[i][j] = Matr[i][j]
-	// 		} else {
-	// 			MatrD[i][j] = 0
-	// 			MatrU[i][j] = Matr[i][j]
-	// 			MatrL[i][j] = 0
-	// 		}
-	// 	}
-	// }
-	// fmt.Println("Диагональ: ", MatrD)
-	// fmt.Println("Нижний треугольник: ", MatrL)
-	// fmt.Println("Верхний треугольник: ", MatrU)
-	//x(n+1) = Bx(x) + d, где B — матрица, а d — вектор
+	//		Метод верхней релаксации (обобщенный метод Зейде-ля)
+
+	fmt.Println("Решение методом Зейделя: ")
+	x = [4]float64{0, 0, 0, 0}
+	for w := 0.2; w <= 1.8; w += 0.2 {
+		iterations = 0
+		for j := 0; j < 30; j++ {
+			for i := 0; i < 4; i++ {
+				x_new[i] = w*((Stolb[i]+Matr[i][i]*x[i] /*!!!*/ -Matr[i][0]*x[0]-Matr[i][1]*x[1]-Matr[i][2]*x[2]-Matr[i][3]*x[3])/Matr[i][i]) + (1-w)*x[i]
+				x[i] = x_new[i]
+			}
+			iterations++
+		}
+		for f := 0; f < 4; f++ {
+			fmt.Print("|  X", f+1, ": ")
+			fmt.Printf("%.3f", x[f])
+		}
+		x = [4]float64{0, 0, 0, 0}
+		fmt.Print("|  W: ")
+		fmt.Printf("%.1f", w)
+		fmt.Println("|  Кол-во операций: ", iterations)
+	}
 }
 
 //			go run laba_2/main.go
